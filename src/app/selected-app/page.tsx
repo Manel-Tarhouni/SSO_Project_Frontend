@@ -1,29 +1,30 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { initiateAuthorization } from "../Services/AuthService";
-import { fetchClientById } from "../Services/ClientService";
-import { ClientResponse } from "../Services/ClientService";
+import { initiateAuthorization } from "../services/auth-service";
+import { fetchClientById } from "../services/client-service";
+import { ClientResponse } from "../services/client-service";
 export default function SelectedAppPage() {
   const searchParams = useSearchParams();
 
   const clientId = searchParams.get("clientId");
   const [client, setClient] = useState<ClientResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);  // State to track loading status
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch client data on component mount
   useEffect(() => {
     if (clientId) {
       const fetchClient = async () => {
         try {
           const clientData = await fetchClientById(clientId);
-          setClient(clientData); // Set the client data if fetched successfully
-          console.log("clientData", clientData); // 👈 Add this line
-          setLoading(false);  // Set loading to false once the data is fetched
+          setClient(clientData);
+          console.log("clientData", clientData);
+          setLoading(false);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Something went wrong.");
-          setLoading(false);  // Set loading to false in case of error
+          setError(
+            err instanceof Error ? err.message : "Something went wrong."
+          );
+          setLoading(false);
         }
       };
       fetchClient();
@@ -37,46 +38,42 @@ export default function SelectedAppPage() {
       setError("Missing parameters for authorization.");
       return;
     }
-  
+
     const redirectUri = client.redirect_uri;
     const scope = client.allowed_scopes.join(" ");
-  
+
     try {
       const result = await initiateAuthorization({
         client_id: clientId,
         redirect_uri: redirectUri,
-        scope: scope
+        scope: scope,
       });
-  
+
       console.log("Authorization result:", result);
-  
+
       if (!result.isAuthenticated) {
-        // Redirect to login page (e.g., /SSOLogin)
         const query = new URLSearchParams({
           clientId: clientId,
           redirect_uri: redirectUri,
-          scope: scope
+          scope: scope,
         }).toString();
-  
-        window.location.href = `/SSOLogin?${query}`;
+
+        window.location.href = `/sso-login?${query}`;
         return;
       }
-  
-      // Optional: handle if already authenticated (future logic)
+
       setAuthorizationResult(result);
-  
     } catch (err: any) {
       setError(err.message);
     }
   };
-  
-  
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
       {client?.logoUrl ? (
         <img
-        src={client.logoUrl}
-        alt={client.client_name}
+          src={client.logoUrl}
+          alt={client.client_name}
           className="w-28 h-28 rounded-full object-cover border border-gray-300 shadow mb-4"
         />
       ) : (
@@ -84,10 +81,15 @@ export default function SelectedAppPage() {
           ?
         </div>
       )}
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">{client?.client_name}</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-2">
+        {client?.client_name}
+      </h1>
       <p className="text-gray-600 text-center text-lg max-w-md mb-4">
         This application requires you to sign in using{" "}
-        <span className="text-indigo-600 font-medium">Single Sign-On (SSO)</span>.
+        <span className="text-indigo-600 font-medium">
+          Single Sign-On (SSO)
+        </span>
+        .
       </p>
       <button
         onClick={handleSSOLogin}
