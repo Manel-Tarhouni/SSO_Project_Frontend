@@ -4,6 +4,7 @@ import { handleSSOLogin } from "./actions";
 import { FiLock, FiMail } from "react-icons/fi";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { useActionState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 interface PageProps {
   searchParams: {
@@ -23,7 +24,6 @@ export default function SSOLogin({ searchParams }: PageProps) {
   const client_id = searchParams.clientId ?? "";
   const redirect_uri = searchParams.redirect_uri ?? "";
   const scope = searchParams.scope ?? "";
-
   const [state, formAction, isPending] = useActionState(
     handleSSOLogin,
     initialState
@@ -135,10 +135,6 @@ export default function SSOLogin({ searchParams }: PageProps) {
           <button className="w-full flex items-center justify-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
             <FaLinkedinIn className="w-5 h-5 mr-2 text-[#0A66C2]" />
             Continue with LinkedIn
-          </button>
-          <button className="w-full flex items-center justify-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <FaGithub className="w-5 h-5 mr-2" />
-            Continue with GitHub
           </button>
         </div>
       </div>

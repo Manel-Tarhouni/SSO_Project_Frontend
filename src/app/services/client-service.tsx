@@ -1,5 +1,5 @@
 const API_URL = "http://localhost:5054/Client";
-
+import { cookies } from "next/headers";
 export interface ClientResponse {
   clientId: string;
   client_name: string;
@@ -18,7 +18,7 @@ export interface RegisterClientRequest {
   logoFile?: File | null;
 }
 
-const handleFetchError = async (response: Response) => {
+export const handleFetchError = async (response: Response) => {
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
     throw new Error(errorBody.error_description || "Something went wrong.");
@@ -26,9 +26,15 @@ const handleFetchError = async (response: Response) => {
   return response.json();
 };
 
+export interface RegisterClientResponse {
+  clientId: string;
+  clientSecret?: string;
+}
+
 export const registerClient = async (
-  request: RegisterClientRequest
-): Promise<{ client_id: string }> => {
+  request: RegisterClientRequest,
+  cookieHeader?: string
+): Promise<RegisterClientResponse> => {
   const formData = new FormData();
   formData.append("IsConfidential", String(request.isConfidential));
   formData.append("ClientName", request.clientName);
@@ -41,10 +47,13 @@ export const registerClient = async (
     formData.append("LogoFile", request.logoFile);
   }
 
+  const headers: HeadersInit = cookieHeader ? { Cookie: cookieHeader } : {};
+
   const response = await fetch(`${API_URL}/register`, {
     method: "POST",
     body: formData,
-    credentials: "include",
+    headers,
+    credentials: cookieHeader ? undefined : "include",
   });
 
   return await handleFetchError(response);
