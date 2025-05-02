@@ -52,7 +52,7 @@ export const postAuthorize = async (
   formData.append("password", postAuthorizeRequest.password);
 
   try {
-    const res = await fetch("http://localhost:5054/OAuth/authorize", {
+    const res = await fetch(AUTH_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

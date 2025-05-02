@@ -9,18 +9,31 @@ import { z } from "zod";
 import { registerClientSchema } from "./schemas/clientRegistrationSchema";
 
 export async function registerClientAction(prevState: any, formData: FormData) {
+  const rawAllowedScopes = formData.get("allowedScopes")?.toString() ?? "";
+  const allowedScopes = rawAllowedScopes
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s !== "");
   const rawData = {
-    // isConfidential: formData.get("isConfidential")?.toString() ?? "",
     isConfidential: formData.get("isConfidential") === "true",
     clientName: formData.get("clientName")?.toString() ?? "",
     redirectUri: formData.get("redirectUri")?.toString() ?? "",
     domain: formData.get("domain")?.toString() ?? "",
-    allowedScopes: formData.getAll("allowedScopes").map(String),
-    //allowedScopes: Array.from(formData.getAll("allowedScopes") ?? []).map(String),
+    allowedScopes,
     logoFile: formData.get("logoFile") as File | null,
   };
 
+  //const parsed = registerClientSchema.safeParse(rawData);
   const parsed = registerClientSchema.safeParse(rawData);
+
+  if (parsed.success) {
+    const data = parsed.data; // ✅ data has type RegisterClientData
+
+    console.log(data.allowedScopes); // ✅ no TypeScript error
+    console.log(data.clientName);
+  } else {
+    console.error(parsed.error.format()); // or handle errors
+  }
 
   if (!parsed.success) {
     console.log("Validation Errors:", parsed.error.flatten().fieldErrors);
@@ -30,17 +43,24 @@ export async function registerClientAction(prevState: any, formData: FormData) {
     };
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
-  //const session = cookies().get('YourCookieName')?.value;
+  //const session = cookies().get('CookieName')?.value;
   try {
     const data = await registerClient(parsed.data, cookieHeader);
     return { success: true, data };
   } catch (err: any) {
     return {
       success: false,
-      errors: {},
-      formError: err.message ?? "Something went wrong",
+      errors: {
+        allowedScopes: [],
+        logoFile: [],
+        isConfidential: [],
+        clientName: [],
+        redirectUri: [],
+        domain: [],
+      },
+      formError: "Something went wrong",
     };
   }
 }

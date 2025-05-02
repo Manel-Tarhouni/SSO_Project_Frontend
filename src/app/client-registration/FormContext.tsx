@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 import { RegisterClientRequest } from "../services/client-service";
 
 type FormData = Omit<RegisterClientRequest, "allowedScopes" | "logoFile"> & {
@@ -11,26 +17,33 @@ type FormData = Omit<RegisterClientRequest, "allowedScopes" | "logoFile"> & {
 type FormContextType = {
   formData: FormData;
   updateFormData: (data: Partial<FormData>) => void;
+  resetFormData: () => void;
 };
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
-  const [formData, setFormData] = useState<FormData>({
+  const initialFormData: FormData = {
     clientName: "",
     domain: "",
     redirectUri: "",
     allowedScopes: [],
     isConfidential: false,
     logoFile: null,
-  });
-
-  const updateFormData = (data: Partial<FormData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
   };
 
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  const updateFormData = useCallback((data: Partial<FormData>) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+  }, []);
+
+  const resetFormData = useCallback(() => {
+    setFormData(initialFormData);
+  }, []);
+
   return (
-    <FormContext.Provider value={{ formData, updateFormData }}>
+    <FormContext.Provider value={{ formData, updateFormData, resetFormData }}>
       {children}
     </FormContext.Provider>
   );

@@ -3,34 +3,33 @@
 import { useFormContext } from "../FormContext";
 import { useActionState } from "react";
 import { registerClientAction } from "../actions";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useState } from "react";
+
+const initialState = {
+  success: false,
+  errors: {
+    allowedScopes: [],
+    logoFile: [],
+    isConfidential: [],
+    clientName: [],
+    redirectUri: [],
+    domain: [],
+  },
+  formError: undefined,
+  data: undefined,
+};
 
 export default function AuthorizationSetupPage() {
   const { formData, updateFormData } = useFormContext();
-  const [selectedScopes, setSelectedScopes] = useState<string[]>(
-    formData.allowedScopes
+  const [allowedScopesInput, setAllowedScopesInput] = useState<string>(
+    (formData.allowedScopes || []).join(", ")
   );
   const [copied, setCopied] = useState<string | null>(null);
 
-  const [state, formAction, isPending] = useActionState(registerClientAction, {
-    success: false,
-    errors: {},
-    formError: undefined,
-    data: undefined,
-  });
-
-  const scopes = ["openid", "profile", "email", "roles"];
-
-  const handleScopeChange = (scope: string) => {
-    const newScopes = selectedScopes.includes(scope)
-      ? selectedScopes.filter((s) => s !== scope)
-      : [...selectedScopes, scope];
-    setSelectedScopes(newScopes);
-    updateFormData({ allowedScopes: newScopes });
-  };
+  const [state, formAction, isPending] = useActionState(
+    registerClientAction,
+    initialState
+  );
 
   const copyToClipboard = async (label: string, value: string) => {
     await navigator.clipboard.writeText(value);
@@ -62,8 +61,7 @@ export default function AuthorizationSetupPage() {
     fd.set("clientName", formData.clientName);
     fd.set("redirectUri", formData.redirectUri);
     fd.set("domain", formData.domain);
-
-    selectedScopes.forEach((scope) => fd.append("allowedScopes", scope));
+    fd.set("allowedScopes", allowedScopesInput);
     if (formData.logoFile) {
       fd.set("logoFile", formData.logoFile);
     }
@@ -79,28 +77,21 @@ export default function AuthorizationSetupPage() {
         <h2 className="text-2xl text-gray-900">Authorization Setup</h2>
 
         <div className="w-full">
-          <h3 className="text-gray-800 mb-3">Select Allowed Scopes</h3>
-          <FormGroup className="bg-gray-50 p-4 rounded-md border border-gray-200">
-            {scopes.map((scope) => (
-              <FormControlLabel
-                key={scope}
-                control={
-                  <Checkbox
-                    checked={selectedScopes.includes(scope)}
-                    onChange={() => handleScopeChange(scope)}
-                    icon={<CheckBoxOutlineBlankIcon />}
-                    checkedIcon={<CheckBoxIcon />}
-                    color="primary"
-                  />
-                }
-                label={
-                  <span className="text-sm text-gray-800 font-medium capitalize">
-                    {scope}
-                  </span>
-                }
-              />
-            ))}
-          </FormGroup>
+          <h3 className="text-gray-800 mb-3">
+            Allowed Scopes (comma-separated)
+          </h3>
+          <input
+            type="text"
+            className="w-full border border-gray-300 rounded-md p-2"
+            placeholder="e.g., openid, profile, email"
+            value={allowedScopesInput}
+            onChange={(e) => setAllowedScopesInput(e.target.value)}
+          />
+          {state.errors?.allowedScopes?.[0] && (
+            <p className="text-sm text-red-500 mt-1">
+              {state.errors.allowedScopes[0]}
+            </p>
+          )}
         </div>
 
         <button
