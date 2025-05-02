@@ -23,16 +23,15 @@ export async function registerClientAction(prevState: any, formData: FormData) {
     logoFile: formData.get("logoFile") as File | null,
   };
 
-  //const parsed = registerClientSchema.safeParse(rawData);
   const parsed = registerClientSchema.safeParse(rawData);
 
   if (parsed.success) {
-    const data = parsed.data; // ✅ data has type RegisterClientData
+    const data = parsed.data;
 
-    console.log(data.allowedScopes); // ✅ no TypeScript error
+    console.log(data.allowedScopes);
     console.log(data.clientName);
   } else {
-    console.error(parsed.error.format()); // or handle errors
+    console.error(parsed.error.format());
   }
 
   if (!parsed.success) {

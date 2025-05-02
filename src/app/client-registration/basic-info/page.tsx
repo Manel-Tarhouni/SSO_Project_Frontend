@@ -1,19 +1,61 @@
 "use client";
+
 import { useFormContext } from "../FormContext";
 import { useRouter } from "next/navigation";
 import { Switch, TextField } from "@mui/material";
 import { FiUploadCloud } from "react-icons/fi";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { basicInfoSchema } from "../schemas/clientRegistrationSchema";
+
+interface FormState {
+  errors: Record<string, string>;
+}
+
+const initialState: FormState = {
+  errors: {},
+};
 
 export default function BasicInfoPage() {
   const { formData, updateFormData } = useFormContext();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [errors, setErrors] = useState<any>({});
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleSubmit(
+    prevState: FormState,
+    formDataObj: FormData
+  ): Promise<FormState> {
+    const clientName = formDataObj.get("clientName") as string;
+    const domain = formDataObj.get("domain") as string;
+    const redirectUri = formDataObj.get("redirectUri") as string;
+    const isConfidential = formDataObj.get("isConfidential") === "on";
+    const logoFile = formDataObj.get("logoFile") as File;
+
+    const data = { clientName, domain, redirectUri, isConfidential, logoFile };
+
+    try {
+      basicInfoSchema.parse(data);
+      updateFormData(data);
+      router.push("/client-registration/authorization-setup");
+      return { errors: {} };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const formattedErrors = error.errors.reduce(
+          (acc, { path, message }) => ({
+            ...acc,
+            [path[0]]: message,
+          }),
+          {}
+        );
+        return { errors: formattedErrors };
+      }
+      return { errors: { general: "Something went wrong" } };
+    }
+  }
+
+  const [state, formAction] = useActionState(handleSubmit, initialState);
+
+  const handleLocalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, type, value, checked, files } = e.target;
 
     if (id === "logoFile" && files?.[0]) {
@@ -27,33 +69,9 @@ export default function BasicInfoPage() {
     }
   };
 
-  const handleNext = async () => {
-    try {
-      // Validate the form data using Zod
-      basicInfoSchema.parse(formData);
-
-      // If validation passes, move to the next page
-      router.push("/client-registration/authorization-setup");
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const formattedErrors = error.errors.reduce(
-          (acc, { path, message }) => ({
-            ...acc,
-            [path[0]]: message,
-          }),
-          {}
-        );
-        setErrors(formattedErrors);
-      }
-    }
-  };
-
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleNext();
-      }}
+      action={formAction}
       className="flex flex-1 flex-col items-center px-4 py-10"
     >
       <div className="flex flex-col gap-6 max-w-xl w-full mx-auto py-6">
@@ -63,41 +81,44 @@ export default function BasicInfoPage() {
 
         <TextField
           id="clientName"
+          name="clientName"
           label="Client Name"
           value={formData.clientName}
-          onChange={handleChange}
+          onChange={handleLocalChange}
           placeholder="My Awesome App"
           variant="outlined"
           fullWidth
           size="small"
-          error={Boolean(errors.clientName)}
-          helperText={errors.clientName}
+          error={Boolean(state.errors.clientName)}
+          helperText={state.errors.clientName}
         />
 
         <TextField
           id="domain"
+          name="domain"
           label="Domain"
           value={formData.domain}
-          onChange={handleChange}
+          onChange={handleLocalChange}
           placeholder="myapp.com"
           variant="outlined"
           fullWidth
           size="small"
-          error={Boolean(errors.domain)}
-          helperText={errors.domain}
+          error={Boolean(state.errors.domain)}
+          helperText={state.errors.domain}
         />
 
         <TextField
           id="redirectUri"
+          name="redirectUri"
           label="Redirect URI"
           value={formData.redirectUri}
-          onChange={handleChange}
+          onChange={handleLocalChange}
           placeholder="https://myapp.com/callback"
           variant="outlined"
           fullWidth
           size="small"
-          error={Boolean(errors.redirectUri)}
-          helperText={errors.redirectUri}
+          error={Boolean(state.errors.redirectUri)}
+          helperText={state.errors.redirectUri}
         />
 
         <div className="flex items-center justify-between">
@@ -106,8 +127,9 @@ export default function BasicInfoPage() {
           </label>
           <Switch
             id="isConfidential"
+            name="isConfidential"
             checked={formData.isConfidential}
-            onChange={handleChange}
+            onChange={handleLocalChange}
             color="primary"
           />
         </div>
@@ -130,9 +152,10 @@ export default function BasicInfoPage() {
             </span>
             <input
               id="logoFile"
+              name="logoFile"
               type="file"
               accept="image/*"
-              onChange={handleChange}
+              onChange={handleLocalChange}
               className="hidden"
             />
           </label>
@@ -145,6 +168,10 @@ export default function BasicInfoPage() {
             />
           )}
         </div>
+
+        {state.errors.general && (
+          <p className="text-red-500 text-sm">{state.errors.general}</p>
+        )}
 
         <button
           type="submit"
