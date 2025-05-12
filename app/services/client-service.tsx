@@ -1,5 +1,5 @@
 const API_URL = "http://localhost:5054/Client";
-import { cookies } from "next/headers";
+
 export interface ClientResponse {
   clientId: string;
   client_name: string;

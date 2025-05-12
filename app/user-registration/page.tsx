@@ -5,7 +5,7 @@ import { FiLock } from "react-icons/fi";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { registerAction, RegisterFormState } from "./actions";
 import { useRouter } from "next/navigation";
-
+import { FcGoogle } from "react-icons/fc";
 export default function RegisterPage() {
   const [formState, formAction, isPending] = useActionState(registerAction, {
     errors: {},
@@ -153,12 +153,8 @@ export default function RegisterPage() {
 
         <div className="space-y-3 mt-6">
           <button className="w-full flex items-center justify-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <FaLinkedinIn className="w-5 h-5 mr-2 text-[#0A66C2]" />
-            Continue with LinkedIn
-          </button>
-          <button className="w-full flex items-center justify-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <FaGithub className="w-5 h-5 mr-2" />
-            Continue with GitHub
+            <FcGoogle className="w-5 h-5 mr-2" />
+            Continue with Google
           </button>
         </div>
       </div>

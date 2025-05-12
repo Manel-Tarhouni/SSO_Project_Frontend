@@ -10,8 +10,10 @@ export interface PostAuthorizeRequest {
   client_id: string;
   redirect_uri: string;
   scope: string;
-  Email: string;
-  password: string;
+  Email?: string;
+  password?: string;
+  Provider?: string;
+  IdToken?: string;
 }
 export const initiateAuthorization = async (
   request: InitiateAuthorizationRequest
@@ -48,9 +50,18 @@ export const postAuthorize = async (
   formData.append("client_id", postAuthorizeRequest.client_id);
   formData.append("redirect_uri", postAuthorizeRequest.redirect_uri);
   formData.append("scope", postAuthorizeRequest.scope);
-  formData.append("Email", postAuthorizeRequest.Email);
-  formData.append("password", postAuthorizeRequest.password);
-
+  if (postAuthorizeRequest.Email) {
+    formData.append("Email", postAuthorizeRequest.Email);
+  }
+  if (postAuthorizeRequest.password) {
+    formData.append("password", postAuthorizeRequest.password);
+  }
+  if (postAuthorizeRequest.Provider) {
+    formData.append("Provider", postAuthorizeRequest.Provider);
+  }
+  if (postAuthorizeRequest.IdToken) {
+    formData.append("IdToken", postAuthorizeRequest.IdToken);
+  }
   try {
     const res = await fetch(AUTH_URL, {
       method: "POST",

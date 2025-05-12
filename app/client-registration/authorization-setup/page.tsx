@@ -82,7 +82,7 @@ export default function AuthorizationSetupPage() {
           </h3>
           <input
             type="text"
-            className="w-full border border-gray-300 rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-2 bg-white text-black"
             placeholder="e.g., openid, profile, email"
             value={allowedScopesInput}
             onChange={(e) => setAllowedScopesInput(e.target.value)}
