@@ -8,13 +8,11 @@ import { usePathname } from "next/navigation";
 const steps = [
   {
     title: "Basic Info",
-    route: RegisterClientRoutes.BASIC_INFO,
-    link: RegisterClientRoutes.BASIC_INFO,
+    path: RegisterClientRoutes.BASIC_INFO,
   },
   {
     title: "Authorization Setup",
-    route: RegisterClientRoutes.AUTH_SETUP,
-    link: RegisterClientRoutes.AUTH_SETUP,
+    path: RegisterClientRoutes.AUTH_SETUP,
   },
 ];
 
@@ -29,12 +27,12 @@ export default function StepNavigation() {
 
       <div className="flex flex-col gap-4">
         {steps.map((step, i) => {
-          const isActive = pathname === step.route;
+          const isActive = pathname === step.path;
 
           return (
             <Link
-              key={step.link}
-              href={step.link}
+              key={step.path}
+              href={step.path}
               className={clsx(
                 "flex items-center gap-3 rounded-lg px-4 py-2 transition duration-200 group",
                 {

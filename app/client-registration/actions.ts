@@ -5,7 +5,6 @@ import {
   registerClient,
   RegisterClientResponse,
 } from "../services/client-service";
-import { z } from "zod";
 import { registerClientSchema } from "./schemas/clientRegistrationSchema";
 
 export async function registerClientAction(prevState: any, formData: FormData) {
@@ -27,9 +26,6 @@ export async function registerClientAction(prevState: any, formData: FormData) {
 
   if (parsed.success) {
     const data = parsed.data;
-
-    console.log(data.allowedScopes);
-    console.log(data.clientName);
   } else {
     console.error(parsed.error.format());
   }
@@ -44,7 +40,7 @@ export async function registerClientAction(prevState: any, formData: FormData) {
 
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
-  //const session = cookies().get('CookieName')?.value;
+
   try {
     const data = await registerClient(parsed.data, cookieHeader);
     return { success: true, data };

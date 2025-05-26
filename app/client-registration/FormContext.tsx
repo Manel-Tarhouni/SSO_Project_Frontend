@@ -21,17 +21,15 @@ type FormContextType = {
 };
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
-
+const initialFormData: FormData = {
+  clientName: "",
+  domain: "",
+  redirectUri: "",
+  allowedScopes: [],
+  isConfidential: false,
+  logoFile: null,
+};
 export const FormProvider = ({ children }: { children: ReactNode }) => {
-  const initialFormData: FormData = {
-    clientName: "",
-    domain: "",
-    redirectUri: "",
-    allowedScopes: [],
-    isConfidential: false,
-    logoFile: null,
-  };
-
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
   const updateFormData = useCallback((data: Partial<FormData>) => {

@@ -18,7 +18,7 @@ export default function SelectedAppPage() {
         try {
           const clientData = await fetchClientById(clientId);
           setClient(clientData);
-          console.log("clientData", clientData);
+
           setLoading(false);
         } catch (err) {
           setError(

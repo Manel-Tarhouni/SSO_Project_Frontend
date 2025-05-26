@@ -4,7 +4,7 @@ import { useFormContext } from "../FormContext";
 import { useActionState } from "react";
 import { registerClientAction } from "../actions";
 import { useState } from "react";
-
+import { downloadClientCredentials, copyToClipboard } from "../helper";
 const initialState = {
   success: false,
   errors: {
@@ -31,28 +31,10 @@ export default function AuthorizationSetupPage() {
     initialState
   );
 
-  const copyToClipboard = async (label: string, value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(label);
-    setTimeout(() => setCopied(null), 2000);
-  };
-
   const downloadCredentials = () => {
-    const content = {
-      clientId: state.data?.clientId,
-      ...(state.data?.clientSecret && {
-        clientSecret: state.data.clientSecret,
-      }),
-    };
-    const blob = new Blob([JSON.stringify(content, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "client_credentials.json";
-    a.click();
-    URL.revokeObjectURL(url);
+    if (state.data) {
+      downloadClientCredentials(state.data);
+    }
   };
 
   const buildFormData = (): FormData => {
@@ -130,7 +112,11 @@ export default function AuthorizationSetupPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      copyToClipboard("clientId", state.data.clientId)
+                      copyToClipboard(
+                        "clientId",
+                        state.data.clientId,
+                        setCopied
+                      )
                     }
                     className="ml-2 text-blue-600 text-xs hover:underline"
                   >
@@ -153,7 +139,8 @@ export default function AuthorizationSetupPage() {
                       onClick={() =>
                         copyToClipboard(
                           "clientSecret",
-                          state.data.clientSecret!
+                          state.data.clientSecret!,
+                          setCopied
                         )
                       }
                       className="ml-2 text-blue-600 text-xs hover:underline"

@@ -3,7 +3,7 @@
 import { handleSSOLogin, LoginFormState } from "./actions";
 import { FiLock, FiMail } from "react-icons/fi";
 import { useActionState, useEffect } from "react";
-
+import { startTransition } from "react";
 interface SSOLoginProps {
   client_id: string;
   redirect_uri: string;
@@ -70,7 +70,11 @@ export default function SSOLogin({
     formData.append("redirect_uri", redirect_uri);
     formData.append("scope", scope);
 
-    formAction(formData);
+    // formAction(formData);
+
+    startTransition(() => {
+      formAction(formData);
+    });
   }
 
   return (

@@ -81,23 +81,25 @@ export async function handleSSOLogin(
   }
 
   try {
-    const response =
-      Provider === "Google"
-        ? await postAuthorize({
-            client_id,
-            redirect_uri,
-            scope,
-            Provider,
-            IdToken,
-          })
-        : await postAuthorize({
-            client_id,
-            redirect_uri,
-            scope,
-            Provider,
-            Email,
-            password,
-          });
+    let response;
+    if (Provider === "Google") {
+      response = await postAuthorize({
+        client_id,
+        redirect_uri,
+        scope,
+        Provider,
+        IdToken,
+      });
+    } else {
+      response = await postAuthorize({
+        client_id,
+        redirect_uri,
+        scope,
+        Provider,
+        Email,
+        password,
+      });
+    }
 
     const redirectUrl = new URL(redirect_uri);
     redirectUrl.searchParams.set("code", response.code);
