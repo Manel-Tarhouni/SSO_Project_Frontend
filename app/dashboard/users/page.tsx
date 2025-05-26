@@ -1,7 +1,7 @@
 import { fetchUsers } from "../services/admin-service";
 import { UserRow, columns } from "./columns";
 import { DataTable } from "./data-table";
-import { ClientCreateUserWrapper } from "./ClientCreateUserWrapper";
+import { ClientCreateUserWrapper } from "./createuser-wrapper";
 export default async function DemoPage() {
   const users: UserRow[] = await fetchUsers();
 

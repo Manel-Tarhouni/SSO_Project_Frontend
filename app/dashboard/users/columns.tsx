@@ -20,7 +20,7 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { deleteUser, unblockUser } from "../services/admin-service";
-import { BlockUserDialog } from "./BlockUserDialog";
+import { BlockUserDialog } from "./block-user-dialog";
 import { useState } from "react";
 
 export type UserRow = {

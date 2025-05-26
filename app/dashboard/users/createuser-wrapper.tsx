@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { RegisterUserDialog } from "./CreateUserDialog";
+import { RegisterUserDialog } from "./createuser-dialog";
 import { useRouter } from "next/navigation";
 
 export function ClientCreateUserWrapper() {
