@@ -6,9 +6,10 @@ export default async function DemoPage() {
   const users: UserRow[] = await fetchUsers();
 
   return (
-    <div className="min-h-screen w-screen bg-gray-100 px-8 py-10">
-      <div className="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4 max-w-6xl px-4">
-        <div className="max-w-3xl">
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div>
           <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
           <p className="text-sm text-gray-600 mt-1">
             A user-friendly interface that allows administrators to efficiently

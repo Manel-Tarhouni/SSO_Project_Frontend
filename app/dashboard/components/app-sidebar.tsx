@@ -45,14 +45,17 @@ const items = [
     title: "User Management",
     icon: Users,
     subItems: [
-      { title: "Users", url: "/dashboard/Users" },
+      { title: "Users", url: "/dashboard/users" },
       { title: "Roles", url: "#" },
     ],
   },
   {
     title: "Organizations",
     icon: Hotel,
-    subItems: [],
+    subItems: [
+      { title: "Organizations", url: "/dashboard/organization" },
+      //  { title: "SSO Integration", url: "#" },
+    ],
   },
   {
     title: "Activity",
