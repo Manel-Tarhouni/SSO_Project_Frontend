@@ -15,10 +15,6 @@ export interface AssignRoleRequest {
   OrganizationId: string;
   RoleName: string;
 }
-export interface AcceptInvitationRequest {
-  token: string;
-  password: string;
-}
 
 export interface CreateClientInOrganizationRequest {
   OrganizationId: string;
@@ -34,26 +30,17 @@ export interface OrgStats {
   applicationCount: number;
   userCount: number;
 }
-export interface AcceptInvitationRequest {
-  token: string;
+
+export interface LoginToOrganizationRequest {
+  email: string;
   password: string;
-  confirmPassword: string; // ce champ ne sera pas envoyé au backend, seulement utilisé côté validation
+  organizationId: string; // or Guid if using a Guid type package
 }
-export interface InvitationDetailsResponse {
-  email: string;
-  organizationName: string;
-  inviterFullName: string;
-}
-export interface SendInvitationRequest {
-  email: string;
-  organizationId: string;
-  invitedByUserId: string;
-}
-export const sendInvitation = async (
-  payload: SendInvitationRequest
-): Promise<void> => {
+export const loginToOrganization = async (
+  payload: LoginToOrganizationRequest
+): Promise<string> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/send`, {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,69 +50,39 @@ export const sendInvitation = async (
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || "Failed to send invitation.");
-    }
-  } catch (error: any) {
-    throw new Error(
-      error.message || "An error occurred while sending the invitation."
-    );
-  }
-};
-export const getInvitationDetails = async (
-  token: string
-): Promise<InvitationDetailsResponse> => {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/details?token=${encodeURIComponent(token)}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Failed to fetch invitation details.");
+      throw new Error(errorText || "Failed to login to organization.");
     }
 
-    const data: InvitationDetailsResponse = await response.json();
-    return data;
+    const data = await response.json();
+    return data.access_token;
   } catch (error: any) {
     throw new Error(
-      error.message || "An error occurred while fetching invitation details."
+      error.message || "An error occurred during login to organization."
     );
   }
 };
 
-export const acceptInvitation = async (
-  data: AcceptInvitationRequest
-): Promise<string> => {
+export const getOrganizationIdByName = async (
+  name: string
+): Promise<string | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/accept`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // utile si tu veux que le cookie de session soit utilisé
-      body: JSON.stringify({
-        token: data.token,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-      }),
+    const response = await fetch(`${API_BASE_URL}/find-by-name/${name}`, {
+      method: "GET",
     });
 
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Failed to accept invitation.");
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null; // Organization not found
+      }
+      const errorText = await response.text();
+      throw new Error(errorText || "Failed to fetch organization.");
     }
 
-    return result.data; // le token JWT retourné dans le successResult
+    const data = await response.json();
+    return data.orgId; // assuming the backend returns { orgId: "..." }
   } catch (error: any) {
     throw new Error(
-      error.message || "An error occurred while accepting the invitation."
+      error.message || "An error occurred while fetching the organization."
     );
   }
 };

@@ -1,189 +1,3 @@
-/*"use client";
-import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Eye, EyeOff, Shield, User } from "lucide-react";
-import { acceptInvitation } from "../../dashboard/services/organization-service";
-
-export default function PasswordSetting() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const token = searchParams.get("token") || "";
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [successMessage, setSuccessMessage] = useState("");
-
-  const validatePassword = (pwd: string) => {
-    const validationErrors: string[] = [];
-    if (pwd.length < 8) validationErrors.push("Minimum 8 characters required");
-    if (!/[A-Z]/.test(pwd))
-      validationErrors.push("Must contain an uppercase letter");
-    if (!/[a-z]/.test(pwd))
-      validationErrors.push("Must contain a lowercase letter");
-    if (!/\d/.test(pwd)) validationErrors.push("Must contain a number");
-    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(pwd))
-      validationErrors.push("Must contain a special character");
-    return validationErrors;
-  };
-
-  const handleAcceptInvitation = async () => {
-    const validationErrors = validatePassword(password);
-    if (password !== confirmPassword)
-      validationErrors.push("Passwords do not match");
-
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsLoading(true);
-    setErrors([]);
-    setSuccessMessage("");
-
-    try {
-      const jwtToken = await acceptInvitation({
-        token,
-        password,
-        confirmPassword,
-      });
-      setSuccessMessage("Account created successfully! Redirecting...");
-      console.log("JWT token:", jwtToken);
-      setTimeout(() => router.push("/dashboard"), 1500);
-    } catch (error: any) {
-      setErrors([error.message || "Failed to accept invitation."]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md shadow-xl rounded-2xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Shield className="h-5 w-5 text-indigo-600" />
-            Set Your Password
-          </CardTitle>
-          <CardDescription>
-            Create a secure password for your account
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="space-y-5">
-        
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-
-        
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {errors.length > 0 && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <ul className="list-disc list-inside space-y-1">
-                  {errors.map((err, idx) => (
-                    <li key={idx}>{err}</li>
-                  ))}
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )}
-
-        
-          {successMessage && (
-            <Alert
-              variant="default"
-              className="text-green-600 border-green-300 bg-green-50"
-            >
-              {successMessage}
-            </Alert>
-          )}
-
-          <Button
-            onClick={handleAcceptInvitation}
-            disabled={isLoading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Creating Account...
-              </>
-            ) : (
-              <>
-                <User className="mr-2 h-4 w-4" />
-                Accept Invitation
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-*/
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -203,13 +17,14 @@ import { AlertCircle, Eye, EyeOff, Mail, Shield, User, X } from "lucide-react";
 import {
   acceptInvitation,
   getInvitationDetails,
-} from "../../dashboard/services/organization-service";
+} from "../../dashboard/services/invitation-service";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 export default function PasswordSetting() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  //const token = searchParams.get("token") || "";
   const token = searchParams.get("token") || "";
 
   const [invitation, setInvitation] = useState<{
@@ -274,9 +89,10 @@ export default function PasswordSetting() {
     setSuccessMessage("");
 
     try {
-      await acceptInvitation({ token, password, confirmPassword });
+      await acceptInvitation({ token, password });
       setSuccessMessage("Account created successfully! Redirecting...");
-      setTimeout(() => router.push("/dashboard"), 1500);
+
+      router.push("/dashboard/organization/users-assignment-per-org");
     } catch (error: any) {
       setErrors([error.message || "Failed to accept invitation."]);
     } finally {

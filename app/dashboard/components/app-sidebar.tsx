@@ -30,8 +30,6 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 
-import { NavUser } from "./nav-user";
-
 const items = [
   {
     title: "Application Management",
@@ -122,9 +120,7 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
+      <SidebarFooter></SidebarFooter>
     </Sidebar>
   );
 }

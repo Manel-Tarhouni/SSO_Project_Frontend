@@ -189,53 +189,6 @@ export function Navbar() {
           <span className="sr-only">Help</span>
         </Button>
 
-        {/* Notifications */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 relative">
-              <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-red-500 hover:bg-red-500 flex items-center justify-center">
-                3
-              </Badge>
-              <span className="sr-only">Notifications</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel className="flex items-center justify-between">
-              Notifications
-              <Badge variant="secondary" className="text-xs">
-                3 new
-              </Badge>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex flex-col items-start p-4 cursor-pointer">
-              <div className="font-medium">New user registered</div>
-              <div className="text-sm text-gray-500">
-                john.smith@company.com joined your organization
-              </div>
-              <div className="text-xs text-gray-400 mt-1">2 minutes ago</div>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start p-4 cursor-pointer">
-              <div className="font-medium">Security alert</div>
-              <div className="text-sm text-gray-500">
-                Failed login attempt detected
-              </div>
-              <div className="text-xs text-gray-400 mt-1">1 hour ago</div>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start p-4 cursor-pointer">
-              <div className="font-medium">System update</div>
-              <div className="text-sm text-gray-500">
-                New features are now available
-              </div>
-              <div className="text-xs text-gray-400 mt-1">3 hours ago</div>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-center text-blue-600 cursor-pointer">
-              View all notifications
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

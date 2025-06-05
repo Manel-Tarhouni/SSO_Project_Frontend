@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { getOrganizationIdByName } from "../../dashboard/services/organization-service"; // adjust the path if needed
 
 import { useState } from "react";
 import {
@@ -15,33 +16,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Building2, ArrowRight, Clock, Check } from "lucide-react";
 
-export default function Component() {
+export default function OrganizationEntry() {
   const [orgName, setOrgName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // Mock recent organizations
-  const recentOrgs = [
-    { name: "acme-corp", displayName: "Acme Corporation" },
-    { name: "tech-solutions", displayName: "Tech Solutions Inc" },
-    { name: "startup-hub", displayName: "Startup Hub" },
-  ];
 
   const handleContinue = async () => {
     if (!orgName.trim()) return;
 
     setIsLoading(true);
 
-    // Simulate API call to validate organization
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const orgId = await getOrganizationIdByName(orgName.trim());
 
-    // Redirect to login with organization context
-    // In a real app, this would be: window.location.href = `/login?org=${orgName}`
-    console.log(`Redirecting to login for organization: ${orgName}`);
-    setIsLoading(false);
-  };
+      if (!orgId) {
+        alert("Organization not found.");
+        setIsLoading(false);
+        return;
+      }
 
-  const handleOrgSelect = (org: string) => {
-    setOrgName(org);
+      window.location.href = `http://localhost:3000/login-dashboard/login?orgId=${orgId}`;
+    } catch (error) {
+      console.error("Error fetching organization ID:", error);
+      alert("Something went wrong. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -56,11 +54,11 @@ export default function Component() {
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <div className="h-12 w-12 bg-cyan-700 rounded-lg flex items-center justify-center">
+            <div className="h-20 w-20  rounded-lg flex items-center justify-center">
               <img
                 src="/logo-dashboard.png"
                 alt="Logo"
-                className="h-6 w-6 text-white"
+                className="h-10 w-10 text-white mr-4"
               />
             </div>
           </div>
@@ -77,8 +75,7 @@ export default function Component() {
           <CardHeader>
             <CardTitle>Find Your Organization</CardTitle>
             <CardDescription>
-              Enter your organization's name or subdomain to access your
-              workspace
+              Enter your organization's name to access your workspace
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -94,9 +91,9 @@ export default function Component() {
                   onKeyPress={handleKeyPress}
                   className="pr-20"
                 />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                {/*     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
                   .workspace.com
-                </div>
+                </div>*/}
               </div>
             </div>
 
@@ -119,7 +116,7 @@ export default function Component() {
               )}
             </Button>
 
-            {/* Recent Organizations */}
+            {/* Recent Organizations 
             {recentOrgs.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -151,7 +148,7 @@ export default function Component() {
                   ))}
                 </div>
               </div>
-            )}
+            )}*/}
           </CardContent>
         </Card>
 
@@ -174,21 +171,6 @@ export default function Component() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Footer */}
-        <div className="text-center space-y-2">
-          <p className="text-xs text-gray-500">
-            Don't have an organization?
-            <button className="text-blue-600 hover:underline ml-1">
-              Create one here
-            </button>
-          </p>
-          <div className="flex justify-center space-x-4 text-xs text-gray-400">
-            <button className="hover:text-gray-600">Privacy Policy</button>
-            <button className="hover:text-gray-600">Terms of Service</button>
-            <button className="hover:text-gray-600">Help</button>
-          </div>
-        </div>
       </div>
     </div>
   );

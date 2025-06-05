@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 
 import {
   BellIcon,
@@ -104,3 +104,4 @@ export function NavUser() {
     </SidebarMenu>
   );
 }
+*/
