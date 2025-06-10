@@ -44,7 +44,7 @@ const items = [
     icon: Users,
     subItems: [
       { title: "Users", url: "/dashboard/users" },
-      { title: "Roles", url: "#" },
+      { title: "Roles", url: "/dashboard/organization/roles" },
     ],
   },
   {

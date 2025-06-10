@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Building2, Eye, EyeOff } from "lucide-react";
 
-import { loginToOrganization } from "../../dashboard/services/organization-service";
+import { loginToOrganization } from "../../dashboard/services/user-service";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();

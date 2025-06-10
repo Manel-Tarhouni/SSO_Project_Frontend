@@ -30,36 +30,27 @@ export interface OrgStats {
   applicationCount: number;
   userCount: number;
 }
-
-export interface LoginToOrganizationRequest {
-  email: string;
-  password: string;
-  organizationId: string; // or Guid if using a Guid type package
+export interface OrganizationDropdownItem {
+  id: string;
+  name: string;
 }
-export const loginToOrganization = async (
-  payload: LoginToOrganizationRequest
-): Promise<string> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+export const fetchOrganizationDropdownItems = async (): Promise<
+  OrganizationDropdownItem[]
+> => {
+  const response = await fetch(`${API_BASE_URL}/allorgNameId`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // Optional if your API needs cookies/session
+  });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Failed to login to organization.");
-    }
-
-    const data = await response.json();
-    return data.access_token;
-  } catch (error: any) {
-    throw new Error(
-      error.message || "An error occurred during login to organization."
-    );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to fetch organizations.");
   }
+
+  return response.json();
 };
 
 export const getOrganizationIdByName = async (
@@ -130,6 +121,7 @@ export const fetchOrgStats = async (): Promise<OrgStats> => {
   }
 };
 // Get All Organizations
+/*
 export const fetchAllOrganizations = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/AllOrgs`, {
@@ -148,7 +140,64 @@ export const fetchAllOrganizations = async () => {
     );
   }
 };
+*/
 
+export const fetchAllOrganizations = async () => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      throw new Error("Access token is missing. Please login first.");
+    }
+
+    const response = await fetch(`${API_BASE_URL}/AllOrgs`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch organizations.");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    throw new Error(
+      error?.message || "An error occurred while fetching organizations."
+    );
+  }
+};
+
+/*
+export interface Organization {
+  orgId: string;
+  displayName: string;
+  createdAt: string; // ou Date si tu veux le convertir après
+  logo: string | null;
+  applicationsCount: number;
+  userOrganizationsCount: number;
+}
+
+export const fetchAllOrganizations = async (): Promise<Organization[]> => {
+  const token = localStorage.getItem("accessToken");
+  const response = await fetch(`${API_BASE_URL}/AllOrgs`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to fetch organizations.");
+  }
+
+  return response.json();
+};
+*/
 // Assign User to Organization
 export const assignUserToOrganization = async (data: AssignUserRequest) => {
   try {
