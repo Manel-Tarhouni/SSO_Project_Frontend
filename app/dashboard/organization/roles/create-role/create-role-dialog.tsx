@@ -245,11 +245,15 @@ export default function CreateRoleDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="shadow-sm">
-          <Plus className="h-4 w-4 mr-2" />
+        <Button
+          size="lg"
+          className="shadow-sm flex items-center justify-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
           Create Role
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader className="space-y-3">
           <div className="flex items-center space-x-2">

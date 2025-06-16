@@ -15,6 +15,14 @@ export interface AssignRoleRequest {
   OrganizationId: string;
   RoleName: string;
 }
+export interface OrganizationDetails {
+  orgId: string;
+  displayName: string;
+  createdAt: string; // use Date if you will parse it as Date
+  userCount: number;
+  clientAppCount: number;
+  roleCount: number;
+}
 
 export interface CreateClientInOrganizationRequest {
   OrganizationId: string;
@@ -34,6 +42,37 @@ export interface OrganizationDropdownItem {
   id: string;
   name: string;
 }
+
+export async function fetchOrganizationDetailsPerOrg(
+  organizationId: string
+): Promise<OrganizationDetails> {
+  const res = await fetch(`${API_BASE_URL}/OrgDetails/${organizationId}`);
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? "Failed to fetch organization details");
+  }
+  return res.json();
+}
+export const fetchOrganizationDetails = async (): Promise<
+  OrganizationDetails[]
+> => {
+  const response = await fetch(`${API_BASE_URL}/OrgDetails`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // include cookies if needed for auth
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to fetch organization details.");
+  }
+
+  return response.json();
+};
+
 export const fetchOrganizationDropdownItems = async (): Promise<
   OrganizationDropdownItem[]
 > => {
@@ -51,6 +90,28 @@ export const fetchOrganizationDropdownItems = async (): Promise<
   }
 
   return response.json();
+};
+export const deleteOrganization = async (
+  organizationId: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${organizationId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Failed to delete organization.");
+    }
+
+    return result;
+  } catch (error: any) {
+    throw new Error(
+      error?.message || "An error occurred while deleting the organization."
+    );
+  }
 };
 
 export const getOrganizationIdByName = async (
@@ -120,27 +181,6 @@ export const fetchOrgStats = async (): Promise<OrgStats> => {
     throw new Error(error.message || "Error fetching organization stats.");
   }
 };
-// Get All Organizations
-/*
-export const fetchAllOrganizations = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/AllOrgs`, {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch organizations.");
-    }
-
-    return await response.json();
-  } catch (error: any) {
-    throw new Error(
-      error?.message || "An error occurred while fetching organizations."
-    );
-  }
-};
-*/
 
 export const fetchAllOrganizations = async () => {
   try {

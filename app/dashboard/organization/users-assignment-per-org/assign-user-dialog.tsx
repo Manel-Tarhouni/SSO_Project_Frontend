@@ -28,6 +28,10 @@ import { toast } from "sonner";
 
 import { sendInvitation } from "../../services/invitation-service";
 import { fetchAllOrganizations } from "../../services/organization-service";
+import {
+  fetchAllRolesNameId,
+  RolesNamesIds,
+} from "../../services/role-service";
 
 interface Organization {
   orgId: string;
@@ -40,11 +44,24 @@ export default function InviteUserDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [roles, setroles] = useState<RolesNamesIds[]>([]);
+
   const [inviteForm, setInviteForm] = useState({
     email: "",
     message: "",
   });
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchAllRolesNameId();
+        setroles(data);
+      } catch (err) {
+        console.error("Failed to fetch organizations", err);
+      }
+    };
 
+    load();
+  }, []);
   useEffect(() => {
     async function loadOrganizations() {
       try {

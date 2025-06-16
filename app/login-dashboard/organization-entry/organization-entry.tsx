@@ -52,40 +52,39 @@ export default function OrganizationEntry() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="flex justify-center">
-            <div className="h-20 w-20  rounded-lg flex items-center justify-center">
-              <img
-                src="/logo-dashboard.png"
-                alt="Logo"
-                className="h-10 w-10 text-white mr-4"
-              />
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Welcome to Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Enter your organization name to continue
-          </p>
-        </div>
 
         {/* Main Card */}
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Find Your Organization</CardTitle>
+            {/*    <CardTitle>Enter Organization</CardTitle>
             <CardDescription>
               Enter your organization's name to access your workspace
-            </CardDescription>
+            </CardDescription>*/}
+            <div className="text-center space-y-2">
+              <div className="flex justify-center">
+                <div className="h-20 w-20  rounded-lg flex items-center justify-center">
+                  <img
+                    src="/logo-dashboard.png"
+                    alt="Logo"
+                    className="h-10 w-10 text-white mr-4"
+                  />
+                </div>
+              </div>
+              <h1 className="text-2xl font-semibold text-gray-800 -mt-2">
+                Enter Organization
+              </h1>
+              <p className="text-gray-600">
+                Enter your organization name to continue
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Organization Input */}
             <div className="space-y-2">
-              <Label htmlFor="organization">Organization Name</Label>
               <div className="relative">
                 <Input
                   id="organization"
-                  placeholder="e.g., acme-corp, your-company"
+                  placeholder="Enter your Organization Name* "
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
                   onKeyPress={handleKeyPress}

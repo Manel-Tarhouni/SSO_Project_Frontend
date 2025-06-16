@@ -4,6 +4,14 @@ interface LoginRequest {
   Email: string;
   password: string;
 }
+// services/user-service.ts
+export interface UserSummary {
+  id: string; // Guid as string
+  email: string;
+  firstname: string;
+  lastname: string;
+  provider: string; // "local" | "Google" | ...
+}
 
 interface RegisterRequest {
   email: string;
@@ -72,31 +80,6 @@ export const loginUser = async (loginData: LoginRequest) => {
     }
   }
 };
-/*
-export const logoutUser = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const message = data.Message || "Erreur lors de la déconnexion.";
-      const details = data.Error || "";
-      throw new Error(`${message}: ${details}`);
-    }
-
-    return data;
-  } catch (error: any) {
-    if (error instanceof Error) {
-      throw new Error(error.message || "Erreur lors de la déconnexion.");
-    } else {
-      throw new Error("Une erreur inconnue s’est produite.");
-    }
-  }
-};*/
 
 export const logoutUser = async (): Promise<void> => {
   try {
@@ -121,19 +104,6 @@ export const logoutUser = async (): Promise<void> => {
   }
 };
 
-/*
-export async function fetchCurrentUser() {
-  const res = await fetch(`${API_BASE_URL}/CurrentUser`, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch current user");
-  }
-
-  return res.json();
-}*/
 export async function fetchCurrentUser() {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -179,3 +149,33 @@ export const loginToOrganization = async (
     );
   }
 };
+export async function fetchUsersByOrganization(
+  organizationId: string
+  /** optional abort controller, timeout, etc. */
+): Promise<UserSummary[]> {
+  // we rely on your existing wrapper so cookies / JWT go with the request
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/users-per-organization/${organizationId}`,
+    {
+      method: "GET",
+      credentials: "include", // cookies (if any)
+      headers: { Accept: "application/json" },
+    }
+  );
+
+  // If you keep fetchWithAuth slim, still check .ok here
+  if (!response.ok) {
+    // Try to parse error payload if the API returns {message, …}
+    let message = `${response.status} ${response.statusText}`;
+    try {
+      const err = await response.json();
+      message = err?.message ?? message;
+    } catch {
+      /* body not JSON – keep default */
+    }
+
+    throw new Error(`Failed to load users: ${message}`);
+  }
+
+  return response.json() as Promise<UserSummary[]>;
+}

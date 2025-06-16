@@ -32,53 +32,43 @@ export interface Role {
   permissionCount: number;
   userCount: number;
 }
+export interface RolesNamesIds {
+  id: string;
+  name: string;
+}
+// services/role-service.ts
+export interface PermissionDto {
+  id: string; // Guid
+  name: string;
+  code: string;
+  description: string;
+}
 
-/*
-export const createRole = async (data: CreateRoleRequest) => {
-  const response = await fetchWithAuth(`${API_BASE_URL}/create`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+export interface RoleWithPermissionsDto {
+  id: string; // Guid
+  name: string;
+  description: string;
+  organizationId: string | null;
+  organizationName: string | null;
+  permissionCount: number;
+  userCount: number;
+  permissions: PermissionDto[];
+}
 
-  return await response.text(); // "Role created successfully."
-};
-
-export const getAllRoles = async (): Promise<Role[]> => {
-  const response = await fetchWithAuth(`${API_BASE_URL}/AllRoles`, {
-    method: "GET",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch roles: ${response.statusText}`);
-  }
-
-  const roles: Role[] = await response.json();
-  return roles;
-};
-export const assignPermissionsToRole = async (
-  roleId: string,
-  permissionIds: string[]
-) => {
-  const response = await fetchWithAuth(
-    `${API_BASE_URL}/${roleId}/assign-permissions`,
-    {
-      method: "POST",
-      body: JSON.stringify(permissionIds),
-    }
+export async function fetchRolesPerOrg(
+  organizationId: string
+): Promise<RoleWithPermissionsDto[]> {
+  // 🔄 call the endpoint that includes permissions
+  const res = await fetchWithAuth(
+    `${API_BASE_URL}/${organizationId}/roles-with-permissions`
   );
 
-  return await response.text(); // "Permissions assigned successfully."
-};
-
-export const assignUserToRole = async (data: AssignUserToRoleRequest) => {
-  const response = await fetchWithAuth(`${API_BASE_URL}/assign-user`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-
-  return await response.text(); // "User assigned to role successfully."
-};
-*/
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? "Failed to fetch roles");
+  }
+  return res.json();
+}
 export const createRole = async (data: CreateRoleRequest) => {
   const response = await fetchWithAuth(
     `${API_BASE_URL}/create-Role-PerOrg/${data.organizationId}`,
@@ -97,6 +87,15 @@ export const createRole = async (data: CreateRoleRequest) => {
   }
 
   return await response.text(); // "Role created successfully."
+};
+export const fetchAllRolesNameId = async (): Promise<RolesNamesIds[]> => {
+  const response = await fetchWithAuth(`${API_BASE_URL}/allRolesNameId`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch roles");
+  }
+
+  return await response.json();
 };
 
 export const assignPermissionsToRole = async (

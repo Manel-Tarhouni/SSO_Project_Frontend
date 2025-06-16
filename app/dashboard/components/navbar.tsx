@@ -78,14 +78,7 @@ export function Navbar() {
       {/* Center Section - Search */}
       <div className="flex flex-1 items-center justify-center px-4">
         <div className="w-full max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="search"
-              placeholder="Search organizations, users, logs..."
-              className="w-full pl-10 pr-4 h-8 bg-gray-50 border-gray-200 focus:bg-white text-sm"
-            />
-          </div>
+          <div className="relative"></div>
         </div>
       </div>
 

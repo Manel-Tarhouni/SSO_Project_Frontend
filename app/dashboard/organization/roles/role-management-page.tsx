@@ -184,10 +184,9 @@ const mockRoles = [
   {
     id: "1",
     name: "Organization Admin",
-    description:
-      "Full administrative access to organization settings and users",
+    description: "Full administrative access to organization",
     organizationId: "1",
-    organizationName: "Acme Corporation",
+    organizationName: "org007",
     permissions: [
       "read:users",
       "write:users",
@@ -203,20 +202,10 @@ const mockRoles = [
     name: "Content Editor",
     description: "Can manage content and view user information",
     organizationId: "1",
-    organizationName: "Acme Corporation",
+    organizationName: "org101",
     permissions: ["read:users", "write:users", "read:organizations"],
     userCount: 8,
     createdAt: "2024-01-20",
-  },
-  {
-    id: "3",
-    name: "Analytics Viewer",
-    description: "Read-only access to analytics and reports",
-    organizationId: "2",
-    organizationName: "TechStart Inc",
-    permissions: ["read:analytics", "read:users"],
-    userCount: 5,
-    createdAt: "2024-01-25",
   },
 ];
 

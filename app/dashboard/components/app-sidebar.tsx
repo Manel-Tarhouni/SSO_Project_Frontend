@@ -32,27 +32,39 @@ import {
 
 const items = [
   {
-    title: "Application Management",
+    title: "Applications",
     icon: LayoutGrid,
     subItems: [
-      { title: "Applications", url: "#" },
-      { title: "SSO Integration", url: "#" },
+      {
+        title: "Applications Management",
+        url: "/dashboard/client-applications/client-apps-management",
+      },
+      {
+        title: "SSO Integration",
+        url: "/dashboard/client-applications/client-app-registration/basic-info",
+      },
     ],
   },
   {
-    title: "User Management",
+    title: "Users",
     icon: Users,
     subItems: [
-      { title: "Users", url: "/dashboard/users" },
-      { title: "Roles", url: "/dashboard/organization/roles" },
+      { title: "Users Management", url: "/dashboard/users" },
+      {
+        title: "Roles Management",
+        url: "/dashboard/organization/roles/create-role",
+      },
     ],
   },
   {
     title: "Organizations",
     icon: Hotel,
     subItems: [
-      { title: "Organizations", url: "/dashboard/organization" },
-      //  { title: "SSO Integration", url: "#" },
+      { title: "Organizations Management", url: "/dashboard/organization" },
+      {
+        title: "Invitations ",
+        url: "/dashboard/organization/users-assignment-per-org",
+      },
     ],
   },
   {
@@ -60,11 +72,7 @@ const items = [
     icon: SquareActivity,
     subItems: [],
   },
-  {
-    title: "Search",
-    icon: Search,
-    subItems: [],
-  },
+
   {
     title: "Settings",
     icon: Settings,

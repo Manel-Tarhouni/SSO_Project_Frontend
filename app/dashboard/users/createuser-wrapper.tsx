@@ -21,7 +21,7 @@ export function ClientCreateUserWrapper() {
   return (
     <>
       <Button
-        className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        className="bg-black text-white"
         onClick={() => setDialogOpen(true)}
       >
         <Plus className="mr-2 h-4 w-4" />

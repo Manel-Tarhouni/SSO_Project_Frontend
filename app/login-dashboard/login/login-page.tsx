@@ -48,7 +48,8 @@ export default function LoginPage() {
       // Save token and redirect
       localStorage.setItem("accessToken", accessToken);
       console.log("Redirecting now...");
-      router.push("/dashboard/organization/users-assignment-per-org");
+      // router.push("/dashboard/organization/users-assignment-per-org");
+      router.push("/dashboard/organization");
       console.log("Redirect triggered");
     } catch (error: any) {
       alert(error.message || "Login failed.");
@@ -61,22 +62,43 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="flex justify-center">
-            <div className="h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-white" />
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Sign in to dashboard
-          </h1>
-        </div>
 
         {/* Login Card */}
         <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle>Welcome back</CardTitle>
+          {/*     <CardHeader>
+            <div className="text-center space-y-2">
+              <div className="flex justify-center">
+                <div className="h-20 w-20  rounded-lg flex items-center justify-center">
+                  <img
+                    src="/logo-dashboard.png"
+                    alt="Logo"
+                    className="h-10 w-10 text-white mr-4"
+                  />{" "}
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome</h1>
+            </div>
+           
             <CardDescription>
+              Enter your credentials to access your workspace
+            </CardDescription>
+          </CardHeader>*/}
+          <CardHeader className="flex flex-col items-center space-y-3">
+            <div className="flex justify-center">
+              <div className="h-20 w-20 rounded-lg flex items-center justify-center">
+                <img
+                  src="/logo-dashboard.png"
+                  alt="Logo"
+                  className="h-10 w-10"
+                />
+              </div>
+            </div>
+
+            <h1 className="text-2xl font-semibold text-gray-800 -mt-2">
+              Welcome to dashboard
+            </h1>
+
+            <CardDescription className="text-center text-sm text-gray-600">
               Enter your credentials to access your workspace
             </CardDescription>
           </CardHeader>
@@ -114,6 +136,14 @@ export default function LoginPage() {
                     <Eye className="h-4 w-4" />
                   )}
                 </button>
+              </div>
+              <div>
+                <a
+                  href="/forgot-password"
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Forgot password?
+                </a>
               </div>
             </div>
 
