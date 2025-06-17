@@ -1,6 +1,7 @@
 "use client";
+export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Card,
@@ -127,186 +128,188 @@ export default function PasswordSetting() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        {invitation && (
-          <div className="text-center space-y-2">
-            <div className="flex justify-center">
-              <Avatar className="h-16 w-16">
-                <AvatarImage
-                  src={invitation.organizationLogo || "/placeholder.svg"}
-                  alt={invitation.organizationName}
-                />
-                <AvatarFallback className="text-lg bg-blue-600 text-white">
-                  {invitation.organizationName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Join {invitation.organizationName}
-            </h1>
-            <p className="text-gray-600">
-              Complete your account setup to get started
-            </p>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-6">
+          {invitation && (
+            <div className="text-center space-y-2">
+              <div className="flex justify-center">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage
+                    src={invitation.organizationLogo || "/placeholder.svg"}
+                    alt={invitation.organizationName}
+                  />
+                  <AvatarFallback className="text-lg bg-blue-600 text-white">
+                    {invitation.organizationName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Join {invitation.organizationName}
+              </h1>
+              <p className="text-gray-600">
+                Complete your account setup to get started
+              </p>
 
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Invitation Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Organization</span>
-                  <span className="font-medium">
-                    {invitation.organizationName}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Your Email</span>
-                  <span className="font-medium">{invitation.email}</span>
-                </div>
-                {invitation.role && (
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Invitation Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Role</span>
-                    <Badge variant="secondary">{invitation.role}</Badge>
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Invited by</span>
-                  <div className="text-right">
-                    <div className="font-medium">
-                      {invitation.inviterFullName}
-                    </div>
-                    {invitation.inviterRole && (
-                      <div className="text-xs text-gray-500">
-                        {invitation.inviterRole}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {invitation.expiresAt && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Expires</span>
-                    <span className="text-sm">
-                      {new Date(invitation.expiresAt).toLocaleDateString()}
+                    <span className="text-sm text-gray-600">Organization</span>
+                    <span className="font-medium">
+                      {invitation.organizationName}
                     </span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Password Form */}
-        <Card className="shadow-xl rounded-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Shield className="h-5 w-5 text-indigo-600" />
-              Set Your Password
-            </CardTitle>
-            <CardDescription>
-              Create a secure password for your account
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Your Email</span>
+                    <span className="font-medium">{invitation.email}</span>
+                  </div>
+                  {invitation.role && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Role</span>
+                      <Badge variant="secondary">{invitation.role}</Badge>
+                    </div>
                   )}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Invited by</span>
+                    <div className="text-right">
+                      <div className="font-medium">
+                        {invitation.inviterFullName}
+                      </div>
+                      {invitation.inviterRole && (
+                        <div className="text-xs text-gray-500">
+                          {invitation.inviterRole}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {invitation.expiresAt && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Expires</span>
+                      <span className="text-sm">
+                        {new Date(invitation.expiresAt).toLocaleDateString()}
+                      </span>
+                    </div>
                   )}
-                </button>
-              </div>
+                </CardContent>
+              </Card>
             </div>
+          )}
 
-            {errors.length > 0 && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  <ul className="list-disc list-inside space-y-1">
-                    {errors.map((err, idx) => (
-                      <li key={idx}>{err}</li>
-                    ))}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
+          {/* Password Form */}
+          <Card className="shadow-xl rounded-2xl">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Shield className="h-5 w-5 text-indigo-600" />
+                Set Your Password
+              </CardTitle>
+              <CardDescription>
+                Create a secure password for your account
+              </CardDescription>
+            </CardHeader>
 
-            {successMessage && (
-              <Alert
-                variant="default"
-                className="text-green-600 border-green-300 bg-green-50"
-              >
-                {successMessage}
-              </Alert>
-            )}
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
 
-            <Button
-              onClick={handleAcceptInvitation}
-              disabled={isLoading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors"
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  <User className="mr-2 h-4 w-4" />
-                  Accept Invitation
-                </>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {errors.length > 0 && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <ul className="list-disc list-inside space-y-1">
+                      {errors.map((err, idx) => (
+                        <li key={idx}>{err}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
               )}
-            </Button>
-          </CardContent>
-        </Card>
+
+              {successMessage && (
+                <Alert
+                  variant="default"
+                  className="text-green-600 border-green-300 bg-green-50"
+                >
+                  {successMessage}
+                </Alert>
+              )}
+
+              <Button
+                onClick={handleAcceptInvitation}
+                disabled={isLoading}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <User className="mr-2 h-4 w-4" />
+                    Accept Invitation
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 }

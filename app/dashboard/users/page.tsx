@@ -1,9 +1,9 @@
-import { fetchUsers } from "../services/admin-service";
+import { fetchUserManagementSummaries } from "../services/user-service";
 import { UserRow, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { ClientCreateUserWrapper } from "./createuser-wrapper";
 export default async function DemoPage() {
-  const users: UserRow[] = await fetchUsers();
+  const users: UserRow[] = await fetchUserManagementSummaries();
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

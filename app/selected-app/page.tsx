@@ -1,9 +1,10 @@
-"use client";
+/*"use client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { initiateAuthorization } from "../services/auth-service";
 import { fetchClientById } from "../services/client-service";
 import { ClientResponse } from "../services/client-service";
+import { Suspense } from "react";
 export default function SelectedAppPage() {
   const searchParams = useSearchParams();
 
@@ -69,36 +70,52 @@ export default function SelectedAppPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
-      {client?.logoUrl ? (
-        <img
-          src={client.logoUrl}
-          alt={client.client_name}
-          className="w-28 h-28 rounded-full object-cover border border-gray-300 shadow mb-4"
-        />
-      ) : (
-        <div className="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center text-3xl text-gray-500 mb-4">
-          ?
-        </div>
-      )}
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">
-        {client?.client_name}
-      </h1>
-      <p className="text-gray-600 text-center text-lg max-w-md mb-4">
-        This application requires you to sign in using{" "}
-        <span className="text-indigo-600 font-medium">
-          Single Sign-On (SSO)
-        </span>
-        .
-      </p>
-      <button
-        onClick={handleSSOLogin}
-        className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition"
-      >
-        Single Sign-On
-      </button>
+    <Suspense fallback={<div className="p-8">Loading…</div>}>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
+        {client?.logoUrl ? (
+          <img
+            src={client.logoUrl}
+            alt={client.client_name}
+            className="w-28 h-28 rounded-full object-cover border border-gray-300 shadow mb-4"
+          />
+        ) : (
+          <div className="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center text-3xl text-gray-500 mb-4">
+            ?
+          </div>
+        )}
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          {client?.client_name}
+        </h1>
+        <p className="text-gray-600 text-center text-lg max-w-md mb-4">
+          This application requires you to sign in using{" "}
+          <span className="text-indigo-600 font-medium">
+            Single Sign-On (SSO)
+          </span>
+          .
+        </p>
+        <button
+          onClick={handleSSOLogin}
+          className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition"
+        >
+          Single Sign-On
+        </button>
 
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-    </div>
+        {error && <p className="mt-4 text-red-500">{error}</p>}
+      </div>
+    </Suspense>
+  );
+}
+*/
+
+import { Suspense } from "react";
+import SelectedAppClient from "./SelectedAppClient";
+
+export const dynamic = "force-dynamic"; // skip pre‑render/ISR
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading…</div>}>
+      <SelectedAppClient />
+    </Suspense>
   );
 }

@@ -4,13 +4,12 @@ interface LoginRequest {
   Email: string;
   password: string;
 }
-// services/user-service.ts
 export interface UserSummary {
-  id: string; // Guid as string
+  id: string;
   email: string;
   firstname: string;
   lastname: string;
-  provider: string; // "local" | "Google" | ...
+  provider: string;
 }
 
 interface RegisterRequest {
@@ -22,8 +21,27 @@ interface RegisterRequest {
 export interface LoginToOrganizationRequest {
   email: string;
   password: string;
-  organizationId: string; // or Guid if using a Guid type package
+  organizationId: string;
 }
+export interface UserOrgDetails {
+  organizationId: string;
+  organizationName: string;
+  clientApps: string[];
+  roles: string[];
+}
+
+export interface UserManagementSummary {
+  id: string;
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  organizationCount: number;
+  roleCount: number;
+  ClientAppCount: number;
+  organizations: UserOrgDetails[];
+}
+
 export const registerUser = async (registerData: RegisterRequest) => {
   try {
     const response = await fetch(`${API_BASE_URL}/register`, {
@@ -151,9 +169,7 @@ export const loginToOrganization = async (
 };
 export async function fetchUsersByOrganization(
   organizationId: string
-  /** optional abort controller, timeout, etc. */
 ): Promise<UserSummary[]> {
-  // we rely on your existing wrapper so cookies / JWT go with the request
   const response = await fetchWithAuth(
     `${API_BASE_URL}/users-per-organization/${organizationId}`,
     {
@@ -163,19 +179,37 @@ export async function fetchUsersByOrganization(
     }
   );
 
-  // If you keep fetchWithAuth slim, still check .ok here
   if (!response.ok) {
-    // Try to parse error payload if the API returns {message, …}
     let message = `${response.status} ${response.statusText}`;
     try {
       const err = await response.json();
       message = err?.message ?? message;
-    } catch {
-      /* body not JSON – keep default */
-    }
+    } catch {}
 
     throw new Error(`Failed to load users: ${message}`);
   }
 
   return response.json() as Promise<UserSummary[]>;
 }
+
+export const fetchUserManagementSummaries = async (): Promise<
+  UserManagementSummary[]
+> => {
+  const url = `${API_BASE_URL}/UserDetails`;
+
+  const response = await fetchWithAuth(url, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const { message, error } = await response.json().catch(() => ({}));
+    throw new Error(message ?? error ?? "Error when trying to get users");
+  }
+
+  const data = (await response.json()) as UserManagementSummary[];
+  return data;
+};
