@@ -67,7 +67,8 @@ export default function SelectedAppPage() {
     } catch (err: any) {
       setError(err.message);
     }
-  };
+
+    };
 
   return (
     <Suspense fallback={<div className="p-8">Loading…</div>}>

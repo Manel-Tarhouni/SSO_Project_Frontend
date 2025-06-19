@@ -1,3 +1,5 @@
+/*"use client";
+
 import { fetchUserManagementSummaries } from "../services/user-service";
 import { UserRow, columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -7,7 +9,7 @@ export default async function DemoPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      {/* Header Section */}
+    
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
@@ -28,4 +30,9 @@ export default async function DemoPage() {
       </div>
     </div>
   );
+}*/
+"use client";
+
+export default async function DemoPage() {
+  return <div className="flex flex-1 flex-col gap-4 p-4 pt-0"></div>;
 }
