@@ -2,6 +2,7 @@
 import {
   fetchUsersByOrganization,
   UserSummary,
+  removeUserFromOrganization,
 } from "../services/user-service";
 
 import {
@@ -11,10 +12,12 @@ import {
 import {
   fetchRolesPerOrg,
   RoleWithPermissionsDto,
+  deleteRole,
 } from "../services/role-service";
 import {
   ClientAppSummaryDto,
   fetchClientAppsByOrg,
+  deleteClientFromOrg,
 } from "../services/clientapp-service";
 
 import {
@@ -51,6 +54,7 @@ import {
   Calendar,
   Lock,
   Key,
+  Loader2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -61,6 +65,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 const mockSelectedOrg = {
   orgId: "org_123456",
@@ -184,13 +189,55 @@ export default function OrgDetailsDialog({ orgId, open, onOpenChange }: Props) {
   const [clientApps, setClientApps] = useState<ClientAppSummaryDto[]>([]);
   const [loadingApps, setLoadingApps] = useState(false);
   const [appsError, setAppsError] = useState<string | null>(null);
-
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [loadingOrg, setLoadingOrg] = useState(false);
   const [orgError, setOrgError] = useState<string | null>(null);
   const [orgDetails, setOrgDetails] = useState<OrganizationDetails | null>(
     null
   );
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [deletingRoleId, setDeletingRoleId] = useState<string | null>(null);
 
+  const handleDeleteRole = async (roleId: string) => {
+    setDeletingRoleId(roleId);
+    try {
+      await deleteRole(roleId);
+      setRoles((prev) => prev.filter((role) => role.id !== roleId));
+      toast.success("Role deleted successfully.");
+    } catch (error: any) {
+      toast.error(error.message ?? "Failed to delete role.");
+    } finally {
+      setDeletingRoleId(null);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!orgId) return;
+    setDeletingUserId(userId);
+    try {
+      await removeUserFromOrganization(orgId, userId);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      toast.success("User removed from organization.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Failed to remove user.");
+    } finally {
+      setDeletingUserId(null);
+    }
+  };
+
+  const handleDeleteApp = async (id: string) => {
+    if (!orgId) return;
+    setDeletingId(id);
+    try {
+      await deleteClientFromOrg(orgId, id);
+      setClientApps((prev) => prev.filter((a) => a.id !== id));
+      toast.success("Application removed from organization.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Failed to delete application.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
   const toggleRoleExpand = (roleId: string) => {
     setExpandedRoles((prev) =>
       prev.includes(roleId)
@@ -482,6 +529,8 @@ export default function OrgDetailsDialog({ orgId, open, onOpenChange }: Props) {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive"
+                              onClick={() => handleDeleteUser(u.id)}
+                              disabled={deletingUserId === u.id}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -567,6 +616,19 @@ export default function OrgDetailsDialog({ orgId, open, onOpenChange }: Props) {
                               >
                                 {role.userCount} Users
                               </Badge>
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevents toggle collapse on click
+                                  handleDeleteRole(role.id);
+                                }}
+                                disabled={deletingRoleId === role.id}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                               <CollapsibleTrigger asChild>
                                 <Button
                                   variant="ghost"
@@ -696,8 +758,14 @@ export default function OrgDetailsDialog({ orgId, open, onOpenChange }: Props) {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-destructive"
+                                disabled={deletingId === app.id}
+                                onClick={() => handleDeleteApp(app.id)}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                {deletingId === app.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
                               </Button>
                             </TableCell>
                           </TableRow>

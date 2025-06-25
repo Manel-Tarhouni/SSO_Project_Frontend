@@ -54,7 +54,6 @@ import {
   UserPlus,
   Settings,
   Check,
-  AlertCircle,
   Crown,
   BarChart3,
 } from "lucide-react";

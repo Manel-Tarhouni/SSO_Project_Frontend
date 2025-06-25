@@ -29,8 +29,7 @@ export default function RootLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <Navbar />
-        <main className="flex-1 overflow-auto mt-6 ml-4">{children}</main>
+        <main className="flex-1 overflow-auto">{children}</main>
         <Toaster />
       </SidebarInset>
     </SidebarProvider>

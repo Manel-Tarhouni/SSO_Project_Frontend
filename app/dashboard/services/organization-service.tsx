@@ -1,7 +1,8 @@
 const API_BASE_URL = "http://localhost:5054/Organization";
+import { fetchWithAuth } from "./fetch-with-auth";
 
 export interface CreateOrganizationRequest {
-  name: string;
+  Name: string;
   logoFile?: File | null;
 }
 
@@ -140,10 +141,11 @@ export const getOrganizationIdByName = async (
 };
 
 // Create Organization
+
 export const createOrganization = async (data: CreateOrganizationRequest) => {
   try {
     const formData = new FormData();
-    formData.append("name", data.name);
+    formData.append("Name", data.Name);
     if (data.logoFile) {
       formData.append("logoFile", data.logoFile);
     }

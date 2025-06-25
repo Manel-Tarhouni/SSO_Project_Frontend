@@ -3,6 +3,7 @@
 import {
   OrganizationDetails,
   fetchOrganizationDetails,
+  deleteOrganization,
 } from "../services/organization-service";
 import OrgDetailsDialog from "./organization-details-dialog";
 import {
@@ -33,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CreateOrganizationWrapper } from "./create-organization_wrapper";
 import {
   Card,
   CardContent,
@@ -58,7 +60,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteOrganizationDialog from "./delete-organization";
-import { deleteOrganization } from "../services/organization-service";
 export default function OrganizationManagement() {
   const [organizations, setOrganizations] = useState<OrganizationDetails[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -141,72 +142,14 @@ export default function OrganizationManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Organizations Management
+          </h1>
           <p className="text-muted-foreground">
             Manage organizations and their users, roles, and applications
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="shadow-sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Organization
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Create New Organization</DialogTitle>
-              <DialogDescription>
-                Add a new organization to your system
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <label htmlFor="displayName" className="text-sm font-medium">
-                  Organization Name
-                </label>
-                <Input
-                  id="displayName"
-                  value={orgForm.displayName}
-                  onChange={(e) =>
-                    setOrgForm({ ...orgForm, displayName: e.target.value })
-                  }
-                  placeholder="Acme Corporation"
-                />
-              </div>
-              <div className="grid gap-2">
-                <label htmlFor="domain" className="text-sm font-medium">
-                  Domain
-                </label>
-                <Input
-                  id="domain"
-                  value={orgForm.domain}
-                  onChange={(e) =>
-                    setOrgForm({ ...orgForm, domain: e.target.value })
-                  }
-                  placeholder="acme.com"
-                />
-                <p className="text-sm text-muted-foreground">
-                  The primary domain associated with this organization
-                </p>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsCreateDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreateOrg}
-                disabled={!orgForm.displayName || !orgForm.domain}
-              >
-                Create Organization
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <CreateOrganizationWrapper />
       </div>
 
       {/* Stats */}

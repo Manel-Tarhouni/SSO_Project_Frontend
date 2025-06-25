@@ -12,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Building2, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 import { loginToOrganization } from "../../dashboard/services/user-service";
 
@@ -22,8 +22,6 @@ export default function LoginPage() {
   const router = useRouter();
 
   const orgId = searchParams.get("orgId") || "";
-  const orgDisplayName = "Acme Corporation"; // Ideally fetched dynamically using orgId or passed as param
-  const orgName = "acme-corp"; // Same as above
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

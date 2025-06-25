@@ -156,3 +156,20 @@ export const getAllRoles = async (): Promise<Role[]> => {
   const roles: Role[] = await response.json();
   return roles;
 };
+export const deleteRole = async (roleId: string): Promise<void> => {
+  const response = await fetchWithAuth(`${API_BASE_URL}/${roleId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    // Try to parse error message from response body
+    let errorMessage = "Failed to delete role.";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch {
+      // ignore parse errors
+    }
+    throw new Error(errorMessage);
+  }
+};

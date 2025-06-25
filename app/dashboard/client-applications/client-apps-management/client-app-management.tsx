@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -17,12 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DeleteApplicationDialog from "../delete-client-app";
 import { Filter, Lock, Plus, Search, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   getClientDetails,
   ClientDetailsDto,
+  deleteClientApp,
 } from "../../services/clientapp-service";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -41,7 +43,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Edit, Trash2, Eye, Key } from "lucide-react";
-// Temporary interface since you're not using a dedicated org service
+import { toast } from "sonner";
+import ViewDetailsDialog from "../client-app-details-dialog/client-app-details-dialog";
+import {
+  fetchClientFullDetails,
+  ClientFullDetailsDto,
+} from "../../services/clientapp-service";
+
 interface Organization {
   id: string;
   name: string;
@@ -55,6 +63,9 @@ export default function ClientApplicationsManagement() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [confidentialFilter, setConfidentialFilter] = useState("all");
 
+  const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
+  const [selectedAppForView, setSelectedAppForView] =
+    useState<ClientFullDetailsDto | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,6 +108,35 @@ export default function ClientApplicationsManagement() {
 
     return matchesSearch && matchesOrg && matchesConfidential;
   });
+  const [selectedApp, setSelectedApp] = useState<ClientDetailsDto | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const handleDeleteClick = (app: ClientDetailsDto) => {
+    setSelectedApp(app);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClientApp = async () => {
+    if (!selectedApp) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteClientApp(selectedApp.id);
+      setClientApps((prev) =>
+        prev.filter((app) => app.clientId !== selectedApp.clientId)
+      );
+      setSelectedApp(null);
+      setIsDeleteDialogOpen(false);
+      toast.success("Application deleted successfully.");
+    } catch (error: any) {
+      console.error("Failed to delete client application:", error.message);
+      toast.error("Failed to delete client application: " + error.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6">
@@ -104,17 +144,19 @@ export default function ClientApplicationsManagement() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">
-            Client Applications
+            Applications Management
           </h1>
           <p className="text-muted-foreground">
             Manage OAuth 2.0 client applications and their authentication
             settings
           </p>
         </div>
-        <Button size="lg" className="shadow-sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Register New Application
-        </Button>
+        <Link href="/dashboard/client-applications/client-app-registration/basic-info">
+          <Button size="lg" className="shadow-sm">
+            <Plus className="h-4 w-4 mr-2" />
+            Register New Application
+          </Button>
+        </Link>
       </div>
 
       {/* Stats */}
@@ -187,18 +229,6 @@ export default function ClientApplicationsManagement() {
                     {org.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
               </SelectContent>
             </Select>
 
@@ -311,14 +341,16 @@ export default function ClientApplicationsManagement() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedClientId(app.id); // Just set the ID
+                              setIsViewDetailsDialogOpen(true); // Then open the dialog
+                            }}
+                          >
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit Application
-                          </DropdownMenuItem>
+
                           {app.isConfidential && (
                             <DropdownMenuItem>
                               <Key className="h-4 w-4 mr-2" />
@@ -326,8 +358,12 @@ export default function ClientApplicationsManagement() {
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash2 className="h-4 w-4 mr-2" />
+
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => handleDeleteClick(app)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
                             Delete Application
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -338,6 +374,20 @@ export default function ClientApplicationsManagement() {
               </TableBody>
             </Table>
           </div>
+          {selectedApp && (
+            <DeleteApplicationDialog
+              open={isDeleteDialogOpen}
+              onClose={() => setIsDeleteDialogOpen(false)}
+              onConfirm={handleDeleteClientApp} // <-- ici, appelle la bonne fonction
+            />
+          )}
+          {selectedClientId && (
+            <ViewDetailsDialog
+              open={isViewDetailsDialogOpen}
+              onClose={() => setIsViewDetailsDialogOpen(false)}
+              clientId={selectedClientId}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

@@ -7,7 +7,7 @@ import {
   fetchClientById,
   type ClientResponse,
 } from "../services/client-service";
-
+import Image from "next/image";
 export default function SelectedAppClient() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get("clientId");

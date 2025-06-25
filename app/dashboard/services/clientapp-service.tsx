@@ -2,6 +2,7 @@ const API_BASE_URL = "http://localhost:5054/Client";
 import { fetchWithAuth } from "./fetch-with-auth";
 
 export interface ClientDetailsDto {
+  id: string;
   client_name: string;
   isConfidential: boolean;
   redirect_Uri: string;
@@ -19,7 +20,28 @@ export interface RegisterClientWithOrgRequest {
   domain: string;
   logoFile: File;
 }
+export interface ClientFullDetailsDto {
+  id: string;
+  clientId: string;
+  clientSecret: string | null;
+  clientName: string;
+  redirectUri: string;
+  scopes: string[];
+  numberOfUsers: number;
+  organizationName: string | null;
+}
+export const fetchClientFullDetails = async (
+  id: string
+): Promise<ClientFullDetailsDto> => {
+  const res = await fetchWithAuth(`${API_BASE_URL}/${id}/client-details`);
 
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error(err || "Failed to fetch client details");
+  }
+
+  return res.json();
+};
 export const getClientDetails = async (): Promise<ClientDetailsDto[]> => {
   const response = await fetchWithAuth(`${API_BASE_URL}/Orgdetails`, {
     method: "GET",
@@ -60,6 +82,7 @@ export const registerClientWithOrg = async (
   return response.json();
 };
 export interface ClientAppSummaryDto {
+  id: string;
   clientId: string;
   clientName: string;
   isConfidential: boolean;
@@ -79,4 +102,18 @@ export const fetchClientAppsByOrg = async (
   }
 
   return response.json();
+};
+
+export const deleteClientApp = async (id: string): Promise<void> => {
+  await fetchWithAuth(`${API_BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
+};
+export const deleteClientFromOrg = async (
+  organizationId: string,
+  clientId: string
+): Promise<void> => {
+  await fetchWithAuth(`${API_BASE_URL}/${organizationId}/${clientId}`, {
+    method: "DELETE",
+  });
 };

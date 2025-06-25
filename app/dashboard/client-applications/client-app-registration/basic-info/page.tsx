@@ -196,7 +196,7 @@ import { z } from "zod";
 import { useState, useActionState } from "react";
 import { basicInfoSchema } from "../schemas/clientRegistrationSchema";
 import { Upload, Info, ArrowRight } from "lucide-react";
-
+import Image from "next/image";
 interface FormState {
   errors: Record<string, string>;
 }

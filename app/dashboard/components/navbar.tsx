@@ -64,7 +64,7 @@ export function Navbar() {
     <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
       {/* Left Section - Sidebar Trigger and Title */}
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="-ml-1" />
+        {/*   <SidebarTrigger className="-ml-1" />*/}
 
         <div className="flex items-center gap-2">
           <div className="hidden sm:block">

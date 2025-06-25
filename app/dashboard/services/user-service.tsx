@@ -213,3 +213,14 @@ export const fetchUserManagementSummaries = async (): Promise<
   const data = (await response.json()) as UserManagementSummary[];
   return data;
 };
+export const removeUserFromOrganization = async (
+  organizationId: string,
+  userId: string
+): Promise<void> => {
+  await fetchWithAuth(
+    `${API_BASE_URL}/organization/${organizationId}/user/${userId}`,
+    {
+      method: "DELETE",
+    }
+  );
+};
