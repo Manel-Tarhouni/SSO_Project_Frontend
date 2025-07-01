@@ -56,6 +56,7 @@ import {
   Check,
   Crown,
   BarChart3,
+  Eye,
 } from "lucide-react";
 
 // Mock data
@@ -327,61 +328,6 @@ export default function RolesManagement() {
           setOpen={setIsCreateDialogOpen}
         />
       </div>
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Roles</CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{roles.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all organizations
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Organizations</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockOrganizations.length}</div>
-            <p className="text-xs text-muted-foreground">
-              With role assignments
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Permissions</CardTitle>
-            <Key className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockPermissions.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Available permissions
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Assigned Users
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {roles.reduce((sum, role) => sum + role.userCount, 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Total role assignments
-            </p>
-          </CardContent>
-        </Card>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Roles List */}
@@ -487,8 +433,8 @@ export default function RolesManagement() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit Role
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Role
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Settings className="h-4 w-4 mr-2" />

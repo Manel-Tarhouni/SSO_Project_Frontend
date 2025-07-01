@@ -67,7 +67,7 @@ const items = [
       { title: "Users Management", url: "/dashboard/users" },
       {
         title: "Roles Management",
-        url: "/dashboard/organization/roles/create-role",
+        url: "/dashboard/organization/roles",
       },
     ],
   },

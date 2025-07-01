@@ -9,7 +9,7 @@ export interface UserSummary {
   email: string;
   firstname: string;
   lastname: string;
-  provider: string;
+  //  provider: string;
 }
 
 interface RegisterRequest {
@@ -111,7 +111,6 @@ export const logoutUser = async (): Promise<void> => {
       throw new Error(data.Message || "Logout failed.");
     }
 
-    // Optionally clear token or localStorage here if you store tokens
     localStorage.removeItem("accessToken");
   } catch (error: any) {
     if (error instanceof Error) {
@@ -223,4 +222,52 @@ export const removeUserFromOrganization = async (
       method: "DELETE",
     }
   );
+};
+export interface AssignUsersToRoleRequest {
+  roleId: string;
+  organizationId: string;
+  userIds: string[];
+}
+
+export const assignUsersToRole = async (
+  request: AssignUsersToRoleRequest
+): Promise<string[]> => {
+  const response = await fetchWithAuth(`${API_BASE_URL}/assign-role-to-users`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const { message } = await response.json().catch(() => ({
+      message: "Failed to assign users to role.",
+    }));
+    throw new Error(message);
+  }
+
+  const data = await response.json();
+  return data.assignedUserIds as string[];
+};
+
+export const fetchUsersByOrgAndRole = async (
+  organizationId: string,
+  roleId: string
+): Promise<UserSummary[]> => {
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/organization/${organizationId}/role/${roleId}/usersPerRoleIdPerOrgId`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to fetch users: ${errorText}`);
+  }
+
+  return response.json();
 };

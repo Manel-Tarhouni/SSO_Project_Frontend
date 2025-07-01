@@ -24,16 +24,16 @@ export default function StepNavigation() {
   const currentStepIndex = steps.findIndex((step) => step.path === pathname);
 
   return (
-    <div className="w-full max-w-lg bg-white p-8">
+    <div className="w-full max-w-lg bg-white p-8 ">
       {/* Header */}
-      <div className="mb-10">
+      {/*    <div className="mb-10">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Register Application
         </h3>
         <p className="text-gray-600 text-sm">
           Set up your new application in just a few steps
         </p>
-      </div>
+      </div>*/}
 
       {/* Progress Steps */}
       <div className="space-y-1">

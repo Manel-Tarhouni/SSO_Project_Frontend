@@ -36,16 +36,34 @@ export interface RolesNamesIds {
   id: string;
   name: string;
 }
-// services/role-service.ts
+export interface RoleDetails {
+  id: string;
+  name: string;
+  description: string;
+  organizationId: string | null;
+  organizationName: string | null;
+  permissionCount: number;
+  userCount: number;
+  permissions: PermissionDto[];
+  users: UserSummary[];
+}
+
+export interface UserSummary {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export interface PermissionDto {
-  id: string; // Guid
+  id: string;
   name: string;
   code: string;
   description: string;
 }
 
 export interface RoleWithPermissionsDto {
-  id: string; // Guid
+  id: string;
   name: string;
   description: string;
   organizationId: string | null;
@@ -70,24 +88,22 @@ export async function fetchRolesPerOrg(
   return res.json();
 }
 export const createRole = async (data: CreateRoleRequest) => {
-  const response = await fetchWithAuth(
-    `${API_BASE_URL}/create-Role-PerOrg/${data.organizationId}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        name: data.name,
-        description: data.description,
-        organizationId: data.organizationId, // optional here if backend doesn’t read it from body
-      }),
-    }
-  );
+  const response = await fetchWithAuth(`${API_BASE_URL}/create-Role-PerOrg`, {
+    method: "POST",
+    body: JSON.stringify({
+      name: data.name,
+      description: data.description,
+      organizationId: data.organizationId,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error(await response.text());
   }
 
-  return await response.text(); // "Role created successfully."
+  return await response.text();
 };
+
 export const fetchAllRolesNameId = async (): Promise<RolesNamesIds[]> => {
   const response = await fetchWithAuth(`${API_BASE_URL}/allRolesNameId`);
 
@@ -100,19 +116,24 @@ export const fetchAllRolesNameId = async (): Promise<RolesNamesIds[]> => {
 
 export const assignPermissionsToRole = async (
   roleId: string,
-  permissionIds: string[],
-  organizationId: string
+  permissionIds: string[]
 ) => {
   const response = await fetchWithAuth(
-    `${API_BASE_URL}/${roleId}/assign-permissions-PerOrg/${organizationId}`,
+    `${API_BASE_URL}/${roleId}/assign-permissions`,
     {
       method: "POST",
       body: JSON.stringify(permissionIds),
     }
   );
 
-  return await response.text(); // "Permissions assigned successfully."
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error || "Failed to assign permissions.");
+  }
+
+  return await response.text(); // Or just return `response` if you don't care about the response message
 };
+
 export const assignUserToRole = async (data: AssignUserToRoleRequest) => {
   const response = await fetchWithAuth(
     `${API_BASE_URL}/assign-user-PerOrg/${data.organizationId}`,
@@ -172,4 +193,54 @@ export const deleteRole = async (roleId: string): Promise<void> => {
     }
     throw new Error(errorMessage);
   }
+};
+
+export const getRoleDetailsById = async (
+  roleId: string
+): Promise<RoleDetails> => {
+  const response = await fetchWithAuth(`${API_BASE_URL}/${roleId}/details`, {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch role details: ${response.statusText}`);
+  }
+
+  return await response.json();
+};
+export const removePermissionFromRole = async (
+  roleId: string,
+  permissionId: string
+): Promise<string> => {
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/${roleId}/permissions/${permissionId}`,
+    { method: "DELETE" }
+  );
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message ?? "Failed to remove permission from role.");
+  }
+
+  const data = (await response.json()) as { message: string };
+  return data.message;
+};
+
+export const removeUserFromRole = async (
+  roleId: string,
+  organizationId: string,
+  userId: string
+): Promise<string> => {
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/${roleId}/organization/${organizationId}/users/${userId}`,
+    { method: "DELETE" }
+  );
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message ?? "Failed to remove user from role.");
+  }
+
+  const data = (await response.json()) as { message: string };
+  return data.message;
 };
